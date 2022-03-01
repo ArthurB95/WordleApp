@@ -13,6 +13,17 @@ export default function App() {
 
       <Text style={styles.title}>WORDLE</Text>
 
+      <View style={styles.map}>
+        <View style={styles.row}>
+          <View style={styles.cell} />
+          <View style={styles.cell} />
+          <View style={styles.cell} />
+          <View style={styles.cell} />
+          <View style={styles.cell} />
+          <View style={styles.cell} />
+        </View>
+      </View>
+
       <Keyboard />
     </SafeAreaView>
   );
@@ -30,5 +41,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 7,
     marginTop: 30
+  },
+  map: {
+    backgroundColor: 'red',
+    alignSelf: 'stretch',
+    height: 100
+  },
+
+  row: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+  },
+
+  cell: {
+    borderWidth: 2,
+    borderColor: colors.darkgrey,
+    flex: 1,
+    aspectRatio: 1,
+    margin: 3
   }
+
 });
