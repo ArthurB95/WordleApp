@@ -26,9 +26,9 @@ export default function App() {
   const onKeyPressed = (key) => {
     const updateRows = copyArray(rows);
 
-    if(key === CLEAR) {
+    if (key === CLEAR) {
       const prevCol = curCol - 1;
-      if(prevCol >= 0) {
+      if (prevCol >= 0) {
         updateRows[curRow][prevCol] = '';
         setRows(updateRows);
         setCurCol(prevCol);
@@ -36,15 +36,15 @@ export default function App() {
       return;
     }
 
-    if(key === ENTER) {
-      if(curCol === rows[0].length) {
+    if (key === ENTER) {
+      if (curCol === rows[0].length) {
         setCurRow(curRow + 1);
         setCurCol(0);
       }
       return;
     }
 
-    if(curCol < rows[0].length) {
+    if (curCol < rows[0].length) {
       updateRows[curRow][curCol] = key;
       setRows(updateRows);
       setCurCol(curCol + 1);
@@ -53,6 +53,19 @@ export default function App() {
 
   const isCellActive = (row, col) => {
     return row === curRow && col === curCol;
+  }
+
+  const getCellBGColor = (letter, row, col) => {
+    if(row >= curRow) {
+      return colors.black;
+    }
+    if (letter === letters[col]) {
+      return colors.primary;
+    }
+    if (letters.includes(letter)) {
+      return colors.secondary;
+    }
+    return colors.darkgrey;
   }
 
   return (
@@ -64,9 +77,9 @@ export default function App() {
       <ScrollView showsHorizontalScrollIndicator={false} style={styles.map}>
         {rows.map((row, i) => (
           <View key={`row-${i}`} style={styles.row}>
-            {row.map((cell, j) => (
-              <View key={`cell-${i}-${j}`} style={[styles.cell, { borderColor: isCellActive() ? colors.lightgrey : colors.darkgrey }]}>
-                <Text style={styles.cellText}>{cell.toUpperCase()}</Text>
+            {row.map((letter, j) => (
+              <View key={`cell-${i}-${j}`} style={[styles.cell, { borderColor: isCellActive(i, j) ? colors.lightgrey : colors.darkgrey, backgroundColor: getCellBGColor(letter, i, j) }]}>
+                <Text style={styles.cellText}>{letter.toUpperCase()}</Text>
               </View>
             ))}
           </View>
