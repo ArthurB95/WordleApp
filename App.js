@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { setStatusBarBackgroundColor, StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, SafeAreaView, ScrollView } from "react-native";
-import { colors, CLEAR, ENTER } from "./src/constants";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, Alert } from "react-native";
+import { colors, CLEAR, ENTER, colorsToEmoji } from "./src/constants";
 
+import * as Clipboard from 'expo-clipboard'
 import Keyboard from "./src/components/Keyboard";
 
 const NUMBER_OF_TRIES = 6;
@@ -12,8 +13,95 @@ const copyArray = (arr) => {
   return [...arr.map((rows) => [...rows])];
 };
 
+const getDayOfTheYear = () => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  const oneDay = 1000 * 60 * 60 * 24;
+  const day = Math.floor(diff/oneDay);
+  return day;
+}
+
+const dayOfTheYear = getDayOfTheYear();
+
+const words = [
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+  'hello',
+  'world',
+]
+
 export default function App() {
-  const word = "hello";
+  const word = words[dayOfTheYear];
   const letters = word.split("");
 
   const [rows, setRows] = useState(
@@ -22,8 +110,50 @@ export default function App() {
 
   const [curRow, setCurRow] = useState(0);
   const [curCol, setCurCol] = useState(0);
+  const [gameState, setGameState] = useState('playing');
+
+  useEffect(() => {
+
+    if (curRow > 0) {
+      checkGameState();
+    }
+
+  }, [curRow])
+
+  const checkGameState = () => {
+    if (checkIfWon() && gameState !== "won") {
+      Alert.alert('WOOOWWWW', 'YOU WON 🏆', [{ text: 'Share', onPress: shareScore }]);
+      setGameState('won')
+    } else if (checkIfLost() && gameState !== 'lost') {
+      Alert.alert('😪', 'Try again tomorrow!');
+      setGameState('lost')
+    }
+  }
+
+  const shareScore = () => {
+    const textMap = rows.map((row, i) => row.map((cell, j) => colorsToEmoji[getCellBGColor(i, j)]).join("")).filter((row) => row).join('\n')
+    
+    const textToShare = `Wordle \n ${textMap}`
+
+    Clipboard.setString(textToShare);
+    Alert.alert('Copied successfully!', 'Share your score on you social media');
+  }
+
+  const checkIfWon = () => {
+    const row = rows[curRow - 1];
+
+    return row.every((letter, i) => letter === letters[i]);
+  }
+
+  const checkIfLost = () => {
+    return !checkIfWon() && curRow === rows.length;
+  }
 
   const onKeyPressed = (key) => {
+    if (gameState !== 'playing') {
+      return;
+    }
+
     const updateRows = copyArray(rows);
 
     if (key === CLEAR) {
@@ -72,7 +202,7 @@ export default function App() {
 
   const getAllLettersWithColor = (color) => {
 
-    return rows.flatMap((row,i) => row.filter((cell, j) => getCellBGColor(i,j) === color))
+    return rows.flatMap((row, i) => row.filter((cell, j) => getCellBGColor(i, j) === color))
 
   }
 
@@ -110,7 +240,7 @@ export default function App() {
         ))}
       </ScrollView>
 
-      <Keyboard onKeyPressed={onKeyPressed} greenCaps={greenCaps} yellowCaps={yellowCaps} greyCaps={greyCaps}/>
+      <Keyboard onKeyPressed={onKeyPressed} greenCaps={greenCaps} yellowCaps={yellowCaps} greyCaps={greyCaps} />
     </SafeAreaView>
   );
 }
