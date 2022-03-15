@@ -4,6 +4,8 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, SafeAreaView } from "react-native";
 import { colors } from "./src/constants";
 
+import Game from './src/components/Game';
+
 
 export default function App() {
 
@@ -12,6 +14,8 @@ export default function App() {
       <StatusBar style="light" />
 
       <Text style={styles.title}>WORDLE</Text>
+
+      <Game />
     </SafeAreaView>
   );
 }

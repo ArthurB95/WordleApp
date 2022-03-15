@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, Alert } from "react-native";
-import { colors, CLEAR, ENTER, colorsToEmoji } from "./src/constants";
+import { Text, View, ScrollView, Alert } from "react-native";
+import { colors, CLEAR, ENTER, colorsToEmoji } from "../../constants";
 
 import * as Clipboard from 'expo-clipboard'
-import Keyboard from "./src/components/Keyboard";
+import Keyboard from "../Keyboard";
+import words from '../../words';
+import styles from './Game.styles';
 
 const NUMBER_OF_TRIES = 6;
 
@@ -18,99 +19,13 @@ const getDayOfTheYear = () => {
   const start = new Date(now.getFullYear(), 0, 0);
   const diff = now - start;
   const oneDay = 1000 * 60 * 60 * 24;
-  const day = Math.floor(diff/oneDay);
+  const day = Math.floor(diff / oneDay);
   return day;
 }
 
 const dayOfTheYear = getDayOfTheYear();
 
-const words = [
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-  'hello',
-  'world',
-]
-
-export default function App() {
+const Game = () => {
   const word = words[dayOfTheYear];
   const letters = word.split("");
 
@@ -142,7 +57,7 @@ export default function App() {
 
   const shareScore = () => {
     const textMap = rows.map((row, i) => row.map((cell, j) => colorsToEmoji[getCellBGColor(i, j)]).join("")).filter((row) => row).join('\n')
-    
+
     const textToShare = `Wordle \n ${textMap}`
 
     Clipboard.setString(textToShare);
@@ -222,11 +137,7 @@ export default function App() {
 
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
-
-      <Text style={styles.title}>WORDLE</Text>
-
+    <>
       <ScrollView showsHorizontalScrollIndicator={false} style={styles.map}>
         {rows.map((row, i) => (
           <View key={`row-${i}`} style={styles.row}>
@@ -251,48 +162,8 @@ export default function App() {
       </ScrollView>
 
       <Keyboard onKeyPressed={onKeyPressed} greenCaps={greenCaps} yellowCaps={yellowCaps} greyCaps={greyCaps} />
-    </SafeAreaView>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.black,
-    alignItems: "center",
-  },
-  title: {
-    color: colors.lightgrey,
-    fontSize: 32,
-    fontWeight: "bold",
-    letterSpacing: 7,
-    marginTop: 30,
-  },
-  map: {
-    alignSelf: "stretch",
-    marginVertical: 20,
-  },
-
-  row: {
-    alignSelf: "stretch",
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-
-  cell: {
-    borderWidth: 3,
-    borderColor: colors.darkgrey,
-    flex: 1,
-    aspectRatio: 1,
-    margin: 3,
-    maxWidth: 70,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  cellText: {
-    color: colors.lightgrey,
-    fontWeight: "bold",
-    fontSize: 28,
-  },
-});
+export default Game;
