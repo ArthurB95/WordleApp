@@ -2,26 +2,15 @@ import React, { useEffect, useState } from "react";
 
 import { Text, View, ScrollView, Alert } from "react-native";
 import { colors, CLEAR, ENTER, colorsToEmoji } from "../../constants";
+import {copyArray, getDayOfTheYear} from '../../utils';
 
 import * as Clipboard from 'expo-clipboard'
 import Keyboard from "../Keyboard";
 import words from '../../words';
 import styles from './Game.styles';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const NUMBER_OF_TRIES = 6;
-
-const copyArray = (arr) => {
-  return [...arr.map((rows) => [...rows])];
-};
-
-const getDayOfTheYear = () => {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now - start;
-  const oneDay = 1000 * 60 * 60 * 24;
-  const day = Math.floor(diff / oneDay);
-  return day;
-}
 
 const dayOfTheYear = getDayOfTheYear();
 
@@ -44,6 +33,23 @@ const Game = () => {
     }
 
   }, [curRow])
+
+  useEffect(() => {
+   
+  },[rows, curRow, curCol, gameState])
+
+  const persistState = async () => {
+    //WRITE ALL THE STATE VARIABLES IN ASYNC STORAGE
+    const data = {
+      rows,
+      curRow,
+      curCol,
+      gameState
+    }
+
+    const dataString = JSON.stringify(data);
+    await AsyncStorage.setItem('@game', dataString)
+  }
 
   const checkGameState = () => {
     if (checkIfWon() && gameState !== "won") {
