@@ -2,7 +2,7 @@
 <img src='./.github/assets/splash.png' width='200px' height='435'>
 <img src='./.github/assets/home.png' width='200px'>
 <img src='./.github/assets/words.png' width='200px'>
-<img src='./.github/assets/win.png' width='200px' height='350'>
+<img src='./.github/assets/win.png' width='300px' height='435'>
 </div>
 
 <p align='center'>
