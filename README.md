@@ -1,8 +1,8 @@
 <div align='center'>
-<img src='./.github/assets/splash.png' width='500' height='772'>
-<img src='./.github/assets/home.png' width='500' height='772'>
-<img src='./.github/assets/words.png' width='500' height='772'>
-<img src='./.github/assets/win.png' width='500' height='772'>
+<img src='./.github/assets/splash.png' width='200px'>
+<img src='./.github/assets/home.png' width='200px'>
+<img src='./.github/assets/words.png' width='200px'>
+<img src='./.github/assets/win.png' width='200px'>
 </div>
 
 <p align='center'>
