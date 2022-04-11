@@ -3,13 +3,18 @@ import React, { useEffect, useState } from "react";
 import { Text, View, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { colors, CLEAR, ENTER, colorsToEmoji } from "../../constants";
 import { copyArray, getDayOfTheYear, getDayKey } from "../../utils";
+import Animated, {
+  SlideInDown,
+  SlideInLeft,
+  ZoomIn,
+  FlipInEasyY,
+} from "react-native-reanimated";
 
-import * as Clipboard from "expo-clipboard";
 import Keyboard from "../Keyboard";
 import words from "../../words";
 import styles from "./Game.styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import EndScreen from '../EndScreen';
+import EndScreen from "../EndScreen";
 
 const NUMBER_OF_TRIES = 6;
 
@@ -89,28 +94,10 @@ const Game = () => {
 
   const checkGameState = () => {
     if (checkIfWon() && gameState !== "won") {
-      Alert.alert("WOOOWWWW", "YOU WON 🏆", [
-        { text: "Share", onPress: shareScore },
-      ]);
       setGameState("won");
     } else if (checkIfLost() && gameState !== "lost") {
-      Alert.alert("😪", "Try again tomorrow!");
       setGameState("lost");
     }
-  };
-
-  const shareScore = () => {
-    const textMap = rows
-      .map((row, i) =>
-        row.map((cell, j) => colorsToEmoji[getCellBGColor(i, j)]).join("")
-      )
-      .filter((row) => row)
-      .join("\n");
-
-    const textToShare = `Wordle \n ${textMap}`;
-
-    Clipboard.setString(textToShare);
-    Alert.alert("Copied successfully!", "Share your score on you social media");
   };
 
   const checkIfWon = () => {
@@ -183,36 +170,65 @@ const Game = () => {
   const yellowCaps = getAllLettersWithColor(colors.secondary);
   const greyCaps = getAllLettersWithColor(colors.darkgrey);
 
+  const getCellStyle = (i, j) => [
+    styles.cell,
+    {
+      borderColor: isCellActive(i, j) ? colors.lightgrey : colors.darkgrey,
+      backgroundColor: getCellBGColor(i, j),
+    },
+  ];
+
   if (!loaded) {
     return <ActivityIndicator />;
   }
 
   if (gameState !== "playing") {
-    return <EndScreen won={gameState === 'won'} />;
+    return (
+      <EndScreen
+        won={gameState === "won"}
+        rows={rows}
+        getCellBGColor={getCellBGColor}
+      />
+    );
   }
 
   return (
     <>
       <ScrollView showsHorizontalScrollIndicator={false} style={styles.map}>
         {rows.map((row, i) => (
-          <View key={`row-${i}`} style={styles.row}>
+          <Animated.View
+            entering={SlideInLeft.delay(i * 30)}
+            key={`row-${i}`}
+            style={styles.row}
+          >
             {row.map((letter, j) => (
-              <View
-                key={`cell-${i}-${j}`}
-                style={[
-                  styles.cell,
-                  {
-                    borderColor: isCellActive(i, j)
-                      ? colors.lightgrey
-                      : colors.darkgrey,
-                    backgroundColor: getCellBGColor(i, j),
-                  },
-                ]}
-              >
-                <Text style={styles.cellText}>{letter.toUpperCase()}</Text>
-              </View>
+              <>
+                {i < curRow && (
+                  <Animated.View
+                    entering={FlipInEasyY.delay(j * 100)}
+                    key={`cell-color-${i}-${j}`}
+                    style={getCellStyle(i, j)}
+                  >
+                    <Text style={styles.cellText}>{letter.toUpperCase()}</Text>
+                  </Animated.View>
+                )}
+                {i === curRow && !!letter && (
+                  <Animated.View
+                    entering={ZoomIn}
+                    key={`cell-active-${i}-${j}`}
+                    style={getCellStyle(i, j)}
+                  >
+                    <Text style={styles.cellText}>{letter.toUpperCase()}</Text>
+                  </Animated.View>
+                )}
+                {!letter && (
+                  <View key={`cell-${i}-${j}`} style={getCellStyle(i, j)}>
+                    <Text style={styles.cellText}>{letter.toUpperCase()}</Text>
+                  </View>
+                )}
+              </>
             ))}
-          </View>
+          </Animated.View>
         ))}
       </ScrollView>
 
